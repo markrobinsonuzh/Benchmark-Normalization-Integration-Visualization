@@ -82,7 +82,7 @@ para <- extract_para(
   #parallelization = "pbmcmapply"
 )
 
-saveRDS(para,"~/Pilot/Simulation/MousePancreas_para.rds")
+saveRDS(para,"~/Benchmark/Pilot/Simulation/MousePancreas_para.rds")
 
 set.seed(123)
 newcounts = simu_new(
