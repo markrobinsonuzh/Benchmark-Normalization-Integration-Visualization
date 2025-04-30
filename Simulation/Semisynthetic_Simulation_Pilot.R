@@ -4,10 +4,9 @@ library(Seurat)
 
 # data = readRDS("~/MousePancreas_count.rds")
 # coldat = readRDS("~/MousePancreas_meta.rds")
-sce  = readRDS("~/Benchmark/sce/mouse_pancreas.rds")
+sce  = readRDS("~/Benchmark/Data/sce/mouse_pancreas.rds")
 data = counts(sce)
 coldat = colData(sce)
-
 
 # QC
 batch = unique(coldat$batch)
@@ -82,7 +81,7 @@ para <- extract_para(
   #parallelization = "pbmcmapply"
 )
 
-saveRDS(para,"~/Benchmark/Pilot/Simulation/MousePancreas_para.rds")
+saveRDS(para,"~/Benchmark/Data/Simulation/Pilot/MousePancreas_para.rds")
 
 set.seed(123)
 newcounts = simu_new(
@@ -100,5 +99,5 @@ newcounts = simu_new(
   important_feature = copula$important_feature,
   parallelization = "pbmcmapply"
 )
-saveRDS(list(meta=data$newCovariate,counts=newcounts),"~/Benchmark/Pilot/Simulation/MousePancreas_simulation.rds")
+saveRDS(list(meta=data$newCovariate,counts=newcounts),"~/Benchmark/Data/Simulation/Pilot/MousePancreas_simulation.rds")
 print("Finished")
