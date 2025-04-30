@@ -1,12 +1,12 @@
 source("~/Normalization_utils.R")
 source("~/Integration_utils.R")
 source("~/Visualization_utils.R")
-data = readRDS("~/MousePancreas_simulation.rds")
+data = readRDS("~/Benchmark/Pilot/Simulation/MousePancreas_simulation.rds")
 dataset = "Pilot"
 
 NormalizationMethods = c("log1pCP10k","log1pPF","log1pCPMedian","sctransform","log1pCPM","PFlog1pPF")
 IntegrationMethods = c("Seurat-CCA","Seurat-RPCA","FastMNN","Harmony")
-VisualizationMethods = c("BH-tsne","FIT-SNE","Seurat-UMAP","densMAP","graphFA","scanpy-UMAP")
+VisualizationMethods = c("BH-tsne","FIt-SNE","Seurat-UMAP","densMAP","graphFA","scanpy-UMAP")
 Time = expand.grid(Normalization = NormalizationMethods, Integration = IntegrationMethods, Visualization = VisualizationMethods)
 Time = rbind(Time, expand.grid(Normalization = "None", Integration = c("scVI"), Visualization = VisualizationMethods))
 Time = rbind(Time, expand.grid(Normalization = "None", Integration = c("LIGERv2"), Visualization = VisualizationMethods))
@@ -69,7 +69,7 @@ for(i in 1:156){
   print(end-start)
   Time[i,]$Visual.time= difftime(end,start,unit = "secs")
   print(dim(Visual))
-  saveRDS(Time, "~/Pilot/Runtime/Pilot_TimeComplexity_part1.rds")
-  saveRDS(Visual, paste0("~/Pilot/Embeddings/",dataset,"_",NormalizeMethod,"+",IntegrateMethod,"+",VisualizeMethod,".rds"))
+  saveRDS(Time, "~/Benchmark/Pilot/Runtime/Pilot_TimeComplexity_part1.rds")
+  saveRDS(Visual, paste0("~/Benchmark/Pilot/Embeddings/",dataset,"_",NormalizeMethod,"+",IntegrateMethod,"+",VisualizeMethod,".rds"))
   old_preprocessing = new_preprocessing
 }
