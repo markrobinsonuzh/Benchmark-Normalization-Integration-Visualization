@@ -2,8 +2,12 @@ library(scDesign3)
 library(SingleCellExperiment)
 library(Seurat)
 
-data = readRDS("~/MousePancreas_count.rds")
-coldat = readRDS("~/MousePancreas_meta.rds")
+# data = readRDS("~/MousePancreas_count.rds")
+# coldat = readRDS("~/MousePancreas_meta.rds")
+sce  = readRDS("~/Benchmark/sce/mouse_pancreas.rds")
+data = counts(sce)
+coldat = colData(sce)
+
 
 # QC
 batch = unique(coldat$batch)
@@ -96,5 +100,5 @@ newcounts = simu_new(
   important_feature = copula$important_feature,
   parallelization = "pbmcmapply"
 )
-saveRDS(list(meta=data$newCovariate,counts=newcounts),"~/Pilot/Simulation/MousePancreas_simulation.rds")
+saveRDS(list(meta=data$newCovariate,counts=newcounts),"~/Benchmark/Pilot/Simulation/MousePancreas_simulation.rds")
 print("Finished")
