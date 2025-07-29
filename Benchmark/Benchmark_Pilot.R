@@ -1,13 +1,19 @@
-source("~/Normalization_utils.R")
-source("~/Integration_utils.R")
-source("~/Visualization_utils.R")
-data = readRDS("~~/Benchmark/Data/Simulation/Pilot/MousePancreas_simulation.rds")
+source("utils/Normalization_utils.R")
+source("utils/Integration_utils.R")
+source("utils/Visualization_utils.R")
+data = readRDS("Benchmark/Data/Simulation/Pilot/MousePancreas_simulation.rds")
 dataset = "Pilot"
 
-NormalizationMethods = c("log1pCP10k","log1pPF","log1pCPMedian","sctransform","log1pCPM","PFlog1pPF")
-IntegrationMethods = c("Seurat-CCA","Seurat-RPCA","FastMNN","Harmony")
-VisualizationMethods = c("BH-tsne","FIt-SNE","Seurat-UMAP","densMAP","graphFA","scanpy-UMAP")
-Time = expand.grid(Normalization = NormalizationMethods, Integration = IntegrationMethods, Visualization = VisualizationMethods)
+NormalizationMethods = c("log1pCP10k","log1pPF","log1pCPMedian",
+                         "sctransform","log1pCPM","PFlog1pPF")
+IntegrationMethods = c("Seurat-CCA","Seurat-RPCA",
+                       "FastMNN","Harmony")
+VisualizationMethods = c("BH-tsne","FIt-SNE","Seurat-UMAP",
+                         "densMAP","graphFA","scanpy-UMAP")
+
+Time = expand.grid(Normalization = NormalizationMethods,
+                   Integration = IntegrationMethods, 
+                   Visualization = VisualizationMethods)
 Time = rbind(Time, expand.grid(Normalization = "None", Integration = c("scVI"), Visualization = VisualizationMethods))
 Time = rbind(Time, expand.grid(Normalization = "None", Integration = c("LIGER"), Visualization = VisualizationMethods))
 Time$Norm.time = 0
@@ -69,7 +75,7 @@ for(i in 1:156){
   print(end-start)
   Time[i,]$Visual.time= difftime(end,start,unit = "secs")
   print(dim(Visual))
-  saveRDS(Time, "~/Benchmark/Results/Pilot/Runtime/Pilot_TimeComplexity.rds")
-  saveRDS(Visual, paste0("~/Benchmark/Results/Pilot/Embeddings/",dataset,"_",NormalizeMethod,"+",IntegrateMethod,"+",VisualizeMethod,".rds"))
+  saveRDS(Time, "Benchmark/Results/Pilot/Runtime/Pilot_TimeComplexity.rds")
+  saveRDS(Visual, paste0("Benchmark/Results/Pilot/Embeddings/",dataset,"_",NormalizeMethod,"+",IntegrateMethod,"+",VisualizeMethod,".rds"))
   old_preprocessing = new_preprocessing
 }
