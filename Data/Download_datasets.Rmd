@@ -110,25 +110,25 @@ saveRDS(sce, "Benchmark/Data/sce/mouse_lung.rds")
 
 ### Mouse pancreas GSM2230761 GSM2230762 (pilot)
 ```{r}
-# file = c("GSM2230761", "GSM2230762")
-# data = lapply(1:2, function(x){
-#   getGEOSuppFiles(file[x])
-#   curr_data = read.csv(paste0(file[x],"/",file[x],"_mouse",x,"_umifm_counts.csv.gz"))
-#   return(curr_data)
-# })
-# 
-# label = lapply(data, function(obj) obj[,3])
-# label = unlist(label)
-# batch = rep(paste0("inDrop",1:2), unlist(lapply(data,nrow)))
-# data = lapply(data,function(obj) {rownames(obj)=obj[,1]; obj[,-(1:3)]})
-# count_mat = t(do.call("rbind", data))
-# coldata = data.frame(celltype = label, batch = batch)
-# rownames(coldata) = colnames(count_mat)
-# sce_save = SingleCellExperiment(list(counts = count_mat), colData = coldata)
-# unique(coldata$celltype)
-# unique(coldata$batch)
-# sce_save
-# saveRDS(sce_save,"~/Benchmark/Data/sce/mouse_pancreas.rds")
+file = c("GSM2230761", "GSM2230762")
+data = lapply(1:2, function(x){
+  getGEOSuppFiles(file[x])
+  curr_data = read.csv(paste0(file[x],"/",file[x],"_mouse",x,"_umifm_counts.csv.gz"))
+  return(curr_data)
+})
+
+label = lapply(data, function(obj) obj[,3])
+label = unlist(label)
+batch = rep(paste0("inDrop",1:2), unlist(lapply(data,nrow)))
+data = lapply(data,function(obj) {rownames(obj)=obj[,1]; obj[,-(1:3)]})
+count_mat = t(do.call("rbind", data))
+coldata = data.frame(celltype = label, batch = batch)
+rownames(coldata) = colnames(count_mat)
+sce_save = SingleCellExperiment(list(counts = count_mat), colData = coldata)
+unique(coldata$celltype)
+unique(coldata$batch)
+sce_save
+saveRDS(sce_save,"Benchmark/Data/sce/mouse_pancreas.rds")
 
 ``` 
 
@@ -273,4 +273,13 @@ Human liver
 # sce = SingleCellExperiment(list(counts = count_fovea), colData = coldata_fovea)
 # sce
 # saveRDS(sce,"~/Benchmark/Data/sce/macaque_retina_fovea.rds")
+```
+
+
+### bit of cleanup
+
+```{r}
+(unlink("GSM2230761", recursive = TRUE))
+(unlink("GSM2230762", recursive = TRUE))
+(unlink("MCA_500more_dge", recursive = TRUE))
 ```
