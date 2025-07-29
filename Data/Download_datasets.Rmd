@@ -1,8 +1,10 @@
 ---
-title: "Untitled"
-author: "Qingyang Wang"
+title: "Data preparation"
+author: "Qingyang Wang, Mark D Robinson (some mods/simplifications)"
 date: "2025-03-23"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup}
@@ -11,47 +13,63 @@ library(SingleCellExperiment)
 library(Seurat)
 library(dplyr)
 library(GEOquery)
+library(R.utils)
 #knitr::opts_knit$set(root.dir = '~/Benchmark/raw_data/')
 ```
 
+### create some directories
+
+```{r}
+dir.create("MCA_500more_dge")
+dir.create("Benchmark/Data")
+dir.create("Benchmark/Data/sce/")
+```
 
 ### mouse small intestine from figshare (https://figshare.com/s/865e694ad06d5857db4b)
 ```{r}
-download.file("https://figshare.com/ndownloader/files/10756798?private_link=865e694ad06d5857db4b", "MCA_500more_dge/MCA_500more_dge.tar.gz")
+download.file("https://figshare.com/ndownloader/files/10756798?private_link=865e694ad06d5857db4b",
+              "MCA_500more_dge/MCA_500more_dge.tar.gz")
 untar("MCA_500more_dge/MCA_500more_dge.tar.gz",exdir = "MCA_500more_dge/")
 data = lapply(1:3, function(x){
   file_path = paste0("MCA_500more_dge/500more_dge/SmallIntestine",x,"_dge.txt")
-  gunzip(paste0(file_path,".gz"), remove = FALSE)
+  cat(file_path,"\n")
+  gunzip(paste0(file_path,".gz"), remove = FALSE, overwrite = TRUE)
   curr_data = read.table(file_path, header = TRUE)
   return(curr_data)
 })
 temp = intersect(rownames(data[[1]]), rownames(data[[2]]))
 genes = intersect(temp, rownames(data[[3]]))
-download.file("https://figshare.com/ndownloader/files/11083451?private_link=865e694ad06d5857db4b","MCA_500more_dge/MCA_CellAssignments.csv")
+
+download.file("https://figshare.com/ndownloader/files/11083451?private_link=865e694ad06d5857db4b",
+              "MCA_500more_dge/MCA_CellAssignments.csv")
 cell_info =  read_csv("MCA_500more_dge/MCA_CellAssignments.csv")
 small_intestine = cell_info[which(cell_info$Tissue == "Small-Intestine"),]
 data_combined = cbind(data[[1]][genes,], data[[2]][genes,], data[[3]][genes,])
 data_combined = data_combined[,small_intestine$Cell.name]
 dim(data_combined)
-coldata = small_intestine %>% mutate(batch = as.factor(Batch), celltype = as.factor(Annotation))
+coldata = small_intestine %>% 
+  mutate(batch = as.factor(Batch), 
+         celltype = as.factor(Annotation))
 unique(coldata$batch)
 unique(coldata$celltype)
-sce = SingleCellExperiment(list(counts = data_combined), colData = coldata)
+sce = SingleCellExperiment(list(counts = data_combined), 
+                           colData = coldata)
 sce
-saveRDS(sce, "~/Benchmark/Data/sce/mouse_small_intestine.rds")
+saveRDS(sce, "Benchmark/Data/sce/mouse_small_intestine.rds")
 ```
 
 ### mouse lung (https://figshare.com/s/865e694ad06d5857db4b)
 ```{r}
 data = lapply(1:3, function(x){
   file_path = paste0("MCA_500more_dge/500more_dge/Lung",x,"_dge.txt")
+  cat(file_path,"\n")
   gunzip(paste0(file_path,".gz"), remove = FALSE)
   curr_data = read.table(file_path, header = TRUE)
   return(curr_data)
 })
 temp = intersect(rownames(data[[1]]), rownames(data[[2]]))
 genes = intersect(temp, rownames(data[[3]]))
-cell_info =  read_csv("~/Benchmark/data/raw/500more_dge/MCA_CellAssignments.csv")
+# cell_info =  read_csv("Benchmark/data/raw/500more_dge/MCA_CellAssignments.csv")
 lung = cell_info[which(cell_info$Tissue == "Lung"),]
 data_combined = cbind(data[[1]][genes,], data[[2]][genes,], data[[3]][genes,])
 data_combined = data_combined[,lung$Cell.name]
@@ -61,121 +79,124 @@ sce = SingleCellExperiment(list(counts = data_combined), colData = coldata)
 unique(coldata$batch)
 unique(coldata$celltype)
 sce
-saveRDS(sce, "~/Benchmark/Data/sce/mouse_lung.rds")
+saveRDS(sce, "Benchmark/Data/sce/mouse_lung.rds")
 ```
 
 ### mouse Cortex from scPSM figshare (https://figshare.com/articles/dataset/scPSM/19306661)  (also in https://singlecell.broadinstitute.org/single_cell/study/SCP425/single-cell-comparison-cortex-data)  SCP425
 ```{r}
-download.file("https://figshare.com/ndownloader/files/34292060","mouse_cortex/mouse_cortex.zip")
-unzip("mouse_cortex/mouse_cortex.zip",exdir="mouse_cortex")
-cortex_expression_matrix <- readRDS("mouse_cortex/cortex_expression_matrix.rds")
-cortex_metadata <- readRDS("mouse_cortex/cortex_metadata.rds")
-## only use experiment2
-exp2 = which(cortex_metadata$Experiment=="Cortex2")
-coldata = cortex_metadata[exp2,]
-no_smart_seq = which(coldata$Method != "Smart-seq2")
-coldata = coldata[no_smart_seq,]
-idx = which(colnames(coldata) == "CellType")
-colnames(coldata)[idx] = "celltype"
-idx = which(colnames(coldata) == "Method")
-colnames(coldata)[idx] = "batch"
-coldata$celltype = as.factor(coldata$celltype)
-coldata$batch = as.factor(coldata$batch)
-unique(coldata$celltype)
-unique(coldata$batch)
-count = cortex_expression_matrix[,rownames(coldata)]
-sce = SingleCellExperiment(list(counts = count),colData = coldata)
-sce
-saveRDS(sce,"~/Benchmark/Data/sce/mouse_cortex.rds")
+# download.file("https://figshare.com/ndownloader/files/34292060","mouse_cortex/mouse_cortex.zip")
+# unzip("mouse_cortex/mouse_cortex.zip",exdir="mouse_cortex")
+# cortex_expression_matrix <- readRDS("mouse_cortex/cortex_expression_matrix.rds")
+# cortex_metadata <- readRDS("mouse_cortex/cortex_metadata.rds")
+# ## only use experiment2
+# exp2 = which(cortex_metadata$Experiment=="Cortex2")
+# coldata = cortex_metadata[exp2,]
+# no_smart_seq = which(coldata$Method != "Smart-seq2")
+# coldata = coldata[no_smart_seq,]
+# idx = which(colnames(coldata) == "CellType")
+# colnames(coldata)[idx] = "celltype"
+# idx = which(colnames(coldata) == "Method")
+# colnames(coldata)[idx] = "batch"
+# coldata$celltype = as.factor(coldata$celltype)
+# coldata$batch = as.factor(coldata$batch)
+# unique(coldata$celltype)
+# unique(coldata$batch)
+# count = cortex_expression_matrix[,rownames(coldata)]
+# sce = SingleCellExperiment(list(counts = count),colData = coldata)
+# sce
+# saveRDS(sce,"~/Benchmark/Data/sce/mouse_cortex.rds")
+
 ```
 
 ### Mouse pancreas GSM2230761 GSM2230762 (pilot)
 ```{r}
-file = c("GSM2230761", "GSM2230762")
-data = lapply(1:2, function(x){
-  getGEOSuppFiles(file[x])
-  curr_data = read.csv(paste0(file[x],"/",file[x],"_mouse",x,"_umifm_counts.csv.gz"))
-  return(curr_data)
-})
+# file = c("GSM2230761", "GSM2230762")
+# data = lapply(1:2, function(x){
+#   getGEOSuppFiles(file[x])
+#   curr_data = read.csv(paste0(file[x],"/",file[x],"_mouse",x,"_umifm_counts.csv.gz"))
+#   return(curr_data)
+# })
+# 
+# label = lapply(data, function(obj) obj[,3])
+# label = unlist(label)
+# batch = rep(paste0("inDrop",1:2), unlist(lapply(data,nrow)))
+# data = lapply(data,function(obj) {rownames(obj)=obj[,1]; obj[,-(1:3)]})
+# count_mat = t(do.call("rbind", data))
+# coldata = data.frame(celltype = label, batch = batch)
+# rownames(coldata) = colnames(count_mat)
+# sce_save = SingleCellExperiment(list(counts = count_mat), colData = coldata)
+# unique(coldata$celltype)
+# unique(coldata$batch)
+# sce_save
+# saveRDS(sce_save,"~/Benchmark/Data/sce/mouse_pancreas.rds")
 
-label = lapply(data, function(obj) obj[,3])
-label = unlist(label)
-batch = rep(paste0("inDrop",1:2), unlist(lapply(data,nrow)))
-data = lapply(data,function(obj) {rownames(obj)=obj[,1]; obj[,-(1:3)]})
-count_mat = t(do.call("rbind", data))
-coldata = data.frame(celltype = label, batch = batch)
-rownames(coldata) = colnames(count_mat)
-sce_save = SingleCellExperiment(list(counts = count_mat), colData = coldata)
-unique(coldata$celltype)
-unique(coldata$batch)
-sce_save
-saveRDS(sce_save,"~/Benchmark/Data/sce/mouse_pancreas.rds")
 ``` 
 
 ### huamn pancreas GSM2230757,GSM2230758,GSM2230759,GSM2230760
 ```{r}
-file = c("GSM2230757","GSM2230758","GSM2230759","GSM2230760")
-data = lapply(1:4, function(x){
-  getGEOSuppFiles(file[x])
-  curr_data = read.csv(paste0(file[x],"/",file[x],"_human",x,"_umifm_counts.csv.gz"))
-  return(curr_data)
-})
-#data = lapply(1:4, function(i) read.csv(paste0("/home/zhiqian/Benchmark/datasets/HumanPancreas/",file[i])))
-label = lapply(data, function(obj) obj[,3])
-label = unlist(label)
-batch = rep(paste0("inDrop",1:4),unlist(lapply(data,nrow)))
-data = lapply(data,function(obj) {rownames(obj)=obj[,1]; obj[,-(1:3)]})
-count_mat = t(do.call("rbind", data))
-coldata = data.frame(celltype = label, batch = batch)
-rownames(coldata) = colnames(count_mat)
-sce_save = SingleCellExperiment(list(counts = count_mat), colData = coldata)
-unique(coldata$celltype)
-unique(coldata$batch)
-sce_save
-saveRDS(sce_save,"~/Benchmark/Data/sce/human_pancreas.rds")
+# file = c("GSM2230757","GSM2230758","GSM2230759","GSM2230760")
+# data = lapply(1:4, function(x){
+#   getGEOSuppFiles(file[x])
+#   curr_data = read.csv(paste0(file[x],"/",file[x],"_human",x,"_umifm_counts.csv.gz"))
+#   return(curr_data)
+# })
+# #data = lapply(1:4, function(i) read.csv(paste0("/home/zhiqian/Benchmark/datasets/HumanPancreas/",file[i])))
+# label = lapply(data, function(obj) obj[,3])
+# label = unlist(label)
+# batch = rep(paste0("inDrop",1:4),unlist(lapply(data,nrow)))
+# data = lapply(data,function(obj) {rownames(obj)=obj[,1]; obj[,-(1:3)]})
+# count_mat = t(do.call("rbind", data))
+# coldata = data.frame(celltype = label, batch = batch)
+# rownames(coldata) = colnames(count_mat)
+# sce_save = SingleCellExperiment(list(counts = count_mat), colData = coldata)
+# unique(coldata$celltype)
+# unique(coldata$batch)
+# sce_save
+# saveRDS(sce_save,"~/Benchmark/Data/sce/human_pancreas.rds")
+
 ``` 
 
 ### Human Lung  GSE130148
 ```{r}
-getGEOSuppFiles("GSE130148")
-gunzip("GSE130148/GSE130148_raw_counts.RData.gz", remove = FALSE)
-load("GSE130148/GSE130148_raw_counts.RData")
-count_mat = raw_counts
-gunzip("GSE130148/GSE130148_barcodes_cell_types.txt.gz", remove = FALSE)
-coldata =  read.table("~/Benchmark/raw_data/GSE130148/GSE130148_barcodes_cell_types.txt", header = TRUE, sep = "\t")
-idx = which(colnames(coldata) == "ID")
-colnames(coldata)[idx] = "batch"
-head(coldata)
-coldata$celltype = as.factor(coldata$celltype)
-coldata$batch = as.factor(coldata$batch)
-unique(coldata$celltype)
-unique(coldata$batch)
-sce = SingleCellExperiment(list(counts = count_mat), colData = coldata)
-sce
-saveRDS(sce,"~/Benchmark/Data/sce/human_lung.rds")
+# getGEOSuppFiles("GSE130148")
+# gunzip("GSE130148/GSE130148_raw_counts.RData.gz", remove = FALSE)
+# load("GSE130148/GSE130148_raw_counts.RData")
+# count_mat = raw_counts
+# gunzip("GSE130148/GSE130148_barcodes_cell_types.txt.gz", remove = FALSE)
+# coldata =  read.table("~/Benchmark/raw_data/GSE130148/GSE130148_barcodes_cell_types.txt", header = TRUE, sep = "\t")
+# idx = which(colnames(coldata) == "ID")
+# colnames(coldata)[idx] = "batch"
+# head(coldata)
+# coldata$celltype = as.factor(coldata$celltype)
+# coldata$batch = as.factor(coldata$batch)
+# unique(coldata$celltype)
+# unique(coldata$batch)
+# sce = SingleCellExperiment(list(counts = count_mat), colData = coldata)
+# sce
+# saveRDS(sce,"~/Benchmark/Data/sce/human_lung.rds")
 ```
 
 ### Human PBMC from scPSM figshare (also in https://singlecell.broadinstitute.org/single_cell/study/SCP424/single-cell-comparison-pbmc-data#study-summary)  SCP424
 ```{r}
-download.file("https://figshare.com/ndownloader/files/34298480","human_pbmc/human_pbmc.zip")
-unzip("human_pbmc/human_pbmc.zip",exdir="human_pbmc")
-pbmc_expression_matrix <- readRDS("human_pbmc/pbmc_expression_matrix.rds")
-pbmc_metadata = readRDS("human_pbmc/pbmc_metadata.rds")
-## only use data from experiment 2 to avoid additional layer of batch effect
-exp2 = which(pbmc_metadata$Experiment=="pbmc2")
-coldata = pbmc_metadata[exp2,]
-idx = which(colnames(coldata) == "CellType")
-colnames(coldata)[idx] = "celltype"
-idx = which(colnames(coldata) == "Method")
-colnames(coldata)[idx] = "batch"
-coldata$celltype = as.factor(coldata$celltype)
-coldata$batch = as.factor(coldata$batch)
-unique(coldata$celltype)
-unique(coldata$batch)
-count = pbmc_expression_matrix[,rownames(coldata)]
-sce = SingleCellExperiment(list(counts = count),colData = coldata)
-sce
-saveRDS(sce,"~/Benchmark/Data/sce/human_pbmc.rds")
+# download.file("https://figshare.com/ndownloader/files/34298480","human_pbmc/human_pbmc.zip")
+# unzip("human_pbmc/human_pbmc.zip",exdir="human_pbmc")
+# pbmc_expression_matrix <- readRDS("human_pbmc/pbmc_expression_matrix.rds")
+# pbmc_metadata = readRDS("human_pbmc/pbmc_metadata.rds")
+# ## only use data from experiment 2 to avoid additional layer of batch effect
+# exp2 = which(pbmc_metadata$Experiment=="pbmc2")
+# coldata = pbmc_metadata[exp2,]
+# idx = which(colnames(coldata) == "CellType")
+# colnames(coldata)[idx] = "celltype"
+# idx = which(colnames(coldata) == "Method")
+# colnames(coldata)[idx] = "batch"
+# coldata$celltype = as.factor(coldata$celltype)
+# coldata$batch = as.factor(coldata$batch)
+# unique(coldata$celltype)
+# unique(coldata$batch)
+# count = pbmc_expression_matrix[,rownames(coldata)]
+# sce = SingleCellExperiment(list(counts = count),colData = coldata)
+# sce
+# saveRDS(sce,"~/Benchmark/Data/sce/human_pbmc.rds")
 ```
 
 
@@ -184,16 +205,16 @@ download from cellxgene Single-soma transcriptomics of tangle-bearing neurons in
 GSE129308, 6 inhibitory neuron clusters
 Human prefrontal cortex
 ```{r}
-seurat <- readRDS(url("https://datasets.cellxgene.cziscience.com/4c4dedb7-1f74-4be7-9916-21e00106a1a7.rds"))
-sce = Seurat::as.SingleCellExperiment(seurat)
-colData(sce)$cell = rownames(colData(sce))
-coldata = colData(sce) %>% as_tibble() %>% filter(disease !="Alzheimer disease") %>% rename(celltype = Cell.Types) %>% mutate(batch = droplevels(donor_id)) %>%as.data.frame()
-unique(coldata$celltype)
-unique(coldata$batch)
-count_mat = counts(sce)[,coldata$cell]
-sce_save = SingleCellExperiment(list(counts = count_mat), colData = coldata)
-sce_save
-saveRDS(sce_save,"~/Benchmark/Data/sce/human_prefrontal_cortex.rds")
+# seurat <- readRDS(url("https://datasets.cellxgene.cziscience.com/4c4dedb7-1f74-4be7-9916-21e00106a1a7.rds"))
+# sce = Seurat::as.SingleCellExperiment(seurat)
+# colData(sce)$cell = rownames(colData(sce))
+# coldata = colData(sce) %>% as_tibble() %>% filter(disease !="Alzheimer disease") %>% rename(celltype = Cell.Types) %>% mutate(batch = droplevels(donor_id)) %>%as.data.frame()
+# unique(coldata$celltype)
+# unique(coldata$batch)
+# count_mat = counts(sce)[,coldata$cell]
+# sce_save = SingleCellExperiment(list(counts = count_mat), colData = coldata)
+# sce_save
+# saveRDS(sce_save,"~/Benchmark/Data/sce/human_prefrontal_cortex.rds")
 ```
 
 
@@ -204,52 +225,52 @@ only use liver
 GSE166895
 Human liver
 ```{r}
-seurat <- readRDS(url("https://datasets.cellxgene.cziscience.com/8e4e400f-30f5-429f-bc38-014e76effe1c.rds"))
-sce = Seurat::as.SingleCellExperiment(seurat)
-colData(sce)$cell = rownames(colData(sce))
-coldata = colData(sce) %>% as_tibble() %>% filter(tissue =="liver") %>% rename(celltype = cell_type) %>% mutate(batch = droplevels(donor_id)) %>%as.data.frame()
-unique(coldata$celltype)
-unique(coldata$batch)
-count_mat = counts(sce)[,coldata$cell]
-sce_save = SingleCellExperiment(list(counts = count_mat), colData = coldata)
-sce_save
-saveRDS(sce_save,"~/Benchmark/Data/sce/human_liver.rds")
+# seurat <- readRDS(url("https://datasets.cellxgene.cziscience.com/8e4e400f-30f5-429f-bc38-014e76effe1c.rds"))
+# sce = Seurat::as.SingleCellExperiment(seurat)
+# colData(sce)$cell = rownames(colData(sce))
+# coldata = colData(sce) %>% as_tibble() %>% filter(tissue =="liver") %>% rename(celltype = cell_type) %>% mutate(batch = droplevels(donor_id)) %>%as.data.frame()
+# unique(coldata$celltype)
+# unique(coldata$batch)
+# count_mat = counts(sce)[,coldata$cell]
+# sce_save = SingleCellExperiment(list(counts = count_mat), colData = coldata)
+# sce_save
+# saveRDS(sce_save,"~/Benchmark/Data/sce/human_liver.rds")
 ```
 
 
 ### human lung atlas https://cellxgene.cziscience.com/e/493a8b60-d676-44d1-b022-d14c1ad0b36c.cxg/
 ```{r}
-data = readRDS(url("https://datasets.cellxgene.cziscience.com/5311ca08-a915-4bea-a83c-5f2231ba18ef.rds"))
-meta = data@meta.data
-data = GetAssayData(data, assay="RNA", layer="counts")
-data = data[, meta$tissue=="lung"]
-meta = meta[meta$tissue=="lung", ]
-meta$celltype = as.character(droplevels(meta$cell_type))
-meta$batch = as.character(droplevels(meta$donor_id))
-unique(meta$celltype)
-unique(meta$batch)
-meta = meta[,c("celltype", "batch")]
-sce = SingleCellExperiment(assays = list(counts = data),colData = meta)
-sce
-saveRDS(sce,"~/Benchmark/Data/sce/human_lung_atlas.rds")
+# data = readRDS(url("https://datasets.cellxgene.cziscience.com/5311ca08-a915-4bea-a83c-5f2231ba18ef.rds"))
+# meta = data@meta.data
+# data = GetAssayData(data, assay="RNA", layer="counts")
+# data = data[, meta$tissue=="lung"]
+# meta = meta[meta$tissue=="lung", ]
+# meta$celltype = as.character(droplevels(meta$cell_type))
+# meta$batch = as.character(droplevels(meta$donor_id))
+# unique(meta$celltype)
+# unique(meta$batch)
+# meta = meta[,c("celltype", "batch")]
+# sce = SingleCellExperiment(assays = list(counts = data),colData = meta)
+# sce
+# saveRDS(sce,"~/Benchmark/Data/sce/human_lung_atlas.rds")
 ```
 
 ### macaque retina fovea  GSE118480, from scPSM figshare
 ```{r}
-download.file("https://figshare.com/ndownloader/files/34298483","macaque_retina_fovea/macaque_retina_fovea.zip")
-unzip("macaque_retina_fovea/macaque_retina_fovea.zip", exdir="macaque_retina_fovea/")
-retina_expression_matrix <- readRDS("macaque_retina_fovea/retina_expression_matrix.rds")
-retina_metadata <- readRDS("macaque_retina_fovea/retina_metadata.rds")
-
-## fovea area
-fovea = which(retina_metadata$region == "Fovea")
-coldata_fovea = retina_metadata[fovea,]
-coldata_fovea = coldata_fovea[,-1] %>% mutate(celltype = as.factor(cluster), batch = as.factor(macaque_id) )
-count_fovea = retina_expression_matrix[,rownames(coldata_fovea)]
-unique(coldata_fovea$celltype)
-length(unique(coldata_fovea$celltype))
-unique(coldata_fovea$batch)
-sce = SingleCellExperiment(list(counts = count_fovea), colData = coldata_fovea)
-sce
-saveRDS(sce,"~/Benchmark/Data/sce/macaque_retina_fovea.rds")
+# download.file("https://figshare.com/ndownloader/files/34298483","macaque_retina_fovea/macaque_retina_fovea.zip")
+# unzip("macaque_retina_fovea/macaque_retina_fovea.zip", exdir="macaque_retina_fovea/")
+# retina_expression_matrix <- readRDS("macaque_retina_fovea/retina_expression_matrix.rds")
+# retina_metadata <- readRDS("macaque_retina_fovea/retina_metadata.rds")
+# 
+# ## fovea area
+# fovea = which(retina_metadata$region == "Fovea")
+# coldata_fovea = retina_metadata[fovea,]
+# coldata_fovea = coldata_fovea[,-1] %>% mutate(celltype = as.factor(cluster), batch = as.factor(macaque_id) )
+# count_fovea = retina_expression_matrix[,rownames(coldata_fovea)]
+# unique(coldata_fovea$celltype)
+# length(unique(coldata_fovea$celltype))
+# unique(coldata_fovea$batch)
+# sce = SingleCellExperiment(list(counts = count_fovea), colData = coldata_fovea)
+# sce
+# saveRDS(sce,"~/Benchmark/Data/sce/macaque_retina_fovea.rds")
 ```
