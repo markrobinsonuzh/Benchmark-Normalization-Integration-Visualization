@@ -283,3 +283,10 @@ Human liver
 (unlink("GSM2230762", recursive = TRUE))
 (unlink("MCA_500more_dge", recursive = TRUE))
 ```
+
+
+### sessioninfo
+
+```{r}
+sessionInfo()
+```
