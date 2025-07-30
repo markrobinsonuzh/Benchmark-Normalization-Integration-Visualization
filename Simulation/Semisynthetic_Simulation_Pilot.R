@@ -92,10 +92,12 @@ para <- extract_para(
   #parallelization = "pbmcmapply"
 )
 
-dir.create("Benchmark/Data/Simulation")
-dir.create("Benchmark/Data/Simulation/Pilot/")
 
-saveRDS(para,"Benchmark/Data/Simulation/Pilot/MousePancreas_para.rds")
+dir.create(file.path(base_dir, "Data/Simulation"))
+dir.create(file.path(base_dir, "Data/Simulation/Pilot"))
+
+saveRDS(para,file.path(base_dir, "Data/Simulation/Pilot/MousePancreas_para.rds"))
+
 
 set.seed(123)
 newcounts = simu_new(
@@ -114,7 +116,7 @@ newcounts = simu_new(
   parallelization = "pbmcmapply"
 )
 saveRDS(list(meta=data$newCovariate,counts=newcounts),
-        "Benchmark/Data/Simulation/Pilot/MousePancreas_simulation.rds")
+        file.path(base_dir, "Data/Simulation/Pilot/MousePancreas_simulation.rds"))
 
 sessionInfo()
 print("Finished")
