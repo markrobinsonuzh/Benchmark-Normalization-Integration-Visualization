@@ -7,79 +7,83 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r setup}
+```{r setup, warning=FALSE, message=FALSE}
 library(readr)
 library(SingleCellExperiment)
 library(Seurat)
 library(dplyr)
 library(GEOquery)
 library(R.utils)
+library(here)
 #knitr::opts_knit$set(root.dir = '~/Benchmark/raw_data/')
 ```
 
 ### create some directories
 
 ```{r}
-dir.create("MCA_500more_dge")
-dir.create("Benchmark/Data")
-dir.create("Benchmark/Data/sce/")
+# dir.create("MCA_500more_dge")
+# dir.create("Benchmark/Data")
+# dir.create("Benchmark/Data/sce/")
+data_dir <- here("Benchmark/Data/sce") # assumes this already exists
 ```
 
 ### mouse small intestine from figshare (https://figshare.com/s/865e694ad06d5857db4b)
 ```{r}
-download.file("https://figshare.com/ndownloader/files/10756798?private_link=865e694ad06d5857db4b",
-              "MCA_500more_dge/MCA_500more_dge.tar.gz")
-untar("MCA_500more_dge/MCA_500more_dge.tar.gz",exdir = "MCA_500more_dge/")
-data = lapply(1:3, function(x){
-  file_path = paste0("MCA_500more_dge/500more_dge/SmallIntestine",x,"_dge.txt")
-  cat(file_path,"\n")
-  gunzip(paste0(file_path,".gz"), remove = FALSE, overwrite = TRUE)
-  curr_data = read.table(file_path, header = TRUE)
-  return(curr_data)
-})
-temp = intersect(rownames(data[[1]]), rownames(data[[2]]))
-genes = intersect(temp, rownames(data[[3]]))
+# download.file("https://figshare.com/ndownloader/files/10756798?private_link=865e694ad06d5857db4b",
+#               "MCA_500more_dge/MCA_500more_dge.tar.gz")
+# untar("MCA_500more_dge/MCA_500more_dge.tar.gz",exdir = "MCA_500more_dge/")
+# data = lapply(1:3, function(x){
+#   file_path = paste0("MCA_500more_dge/500more_dge/SmallIntestine",x,"_dge.txt")
+#   cat(file_path,"\n")
+#   gunzip(paste0(file_path,".gz"), remove = FALSE, overwrite = TRUE)
+#   curr_data = read.table(file_path, header = TRUE)
+#   return(curr_data)
+# })
+# temp = intersect(rownames(data[[1]]), rownames(data[[2]]))
+# genes = intersect(temp, rownames(data[[3]]))
+# 
+# download.file("https://figshare.com/ndownloader/files/11083451?private_link=865e694ad06d5857db4b",
+#               "MCA_500more_dge/MCA_CellAssignments.csv")
+# cell_info =  read_csv("MCA_500more_dge/MCA_CellAssignments.csv")
+# small_intestine = cell_info[which(cell_info$Tissue == "Small-Intestine"),]
+# data_combined = cbind(data[[1]][genes,], data[[2]][genes,], data[[3]][genes,])
+# data_combined = data_combined[,small_intestine$Cell.name]
+# dim(data_combined)
+# coldata = small_intestine %>% 
+#   mutate(batch = as.factor(Batch), 
+#          celltype = as.factor(Annotation))
+# unique(coldata$batch)
+# unique(coldata$celltype)
+# sce = SingleCellExperiment(list(counts = data_combined), 
+#                            colData = coldata)
+# sce
+# saveRDS(sce, "Benchmark/Data/sce/mouse_small_intestine.rds")
 
-download.file("https://figshare.com/ndownloader/files/11083451?private_link=865e694ad06d5857db4b",
-              "MCA_500more_dge/MCA_CellAssignments.csv")
-cell_info =  read_csv("MCA_500more_dge/MCA_CellAssignments.csv")
-small_intestine = cell_info[which(cell_info$Tissue == "Small-Intestine"),]
-data_combined = cbind(data[[1]][genes,], data[[2]][genes,], data[[3]][genes,])
-data_combined = data_combined[,small_intestine$Cell.name]
-dim(data_combined)
-coldata = small_intestine %>% 
-  mutate(batch = as.factor(Batch), 
-         celltype = as.factor(Annotation))
-unique(coldata$batch)
-unique(coldata$celltype)
-sce = SingleCellExperiment(list(counts = data_combined), 
-                           colData = coldata)
-sce
-saveRDS(sce, "Benchmark/Data/sce/mouse_small_intestine.rds")
 ```
 
 ### mouse lung (https://figshare.com/s/865e694ad06d5857db4b)
 ```{r}
-data = lapply(1:3, function(x){
-  file_path = paste0("MCA_500more_dge/500more_dge/Lung",x,"_dge.txt")
-  cat(file_path,"\n")
-  gunzip(paste0(file_path,".gz"), remove = FALSE)
-  curr_data = read.table(file_path, header = TRUE)
-  return(curr_data)
-})
-temp = intersect(rownames(data[[1]]), rownames(data[[2]]))
-genes = intersect(temp, rownames(data[[3]]))
-# cell_info =  read_csv("Benchmark/data/raw/500more_dge/MCA_CellAssignments.csv")
-lung = cell_info[which(cell_info$Tissue == "Lung"),]
-data_combined = cbind(data[[1]][genes,], data[[2]][genes,], data[[3]][genes,])
-data_combined = data_combined[,lung$Cell.name]
-dim(data_combined)
-coldata = lung %>% mutate(batch = as.factor(Batch), celltype = as.factor(Annotation))
-sce = SingleCellExperiment(list(counts = data_combined), colData = coldata)
-unique(coldata$batch)
-unique(coldata$celltype)
-sce
-saveRDS(sce, "Benchmark/Data/sce/mouse_lung.rds")
+# data = lapply(1:3, function(x){
+#   file_path = paste0("MCA_500more_dge/500more_dge/Lung",x,"_dge.txt")
+#   cat(file_path,"\n")
+#   gunzip(paste0(file_path,".gz"), remove = FALSE)
+#   curr_data = read.table(file_path, header = TRUE)
+#   return(curr_data)
+# })
+# temp = intersect(rownames(data[[1]]), rownames(data[[2]]))
+# genes = intersect(temp, rownames(data[[3]]))
+# # cell_info =  read_csv("Benchmark/data/raw/500more_dge/MCA_CellAssignments.csv")
+# lung = cell_info[which(cell_info$Tissue == "Lung"),]
+# data_combined = cbind(data[[1]][genes,], data[[2]][genes,], data[[3]][genes,])
+# data_combined = data_combined[,lung$Cell.name]
+# dim(data_combined)
+# coldata = lung %>% mutate(batch = as.factor(Batch), celltype = as.factor(Annotation))
+# sce = SingleCellExperiment(list(counts = data_combined), colData = coldata)
+# unique(coldata$batch)
+# unique(coldata$celltype)
+# sce
+# saveRDS(sce, "Benchmark/Data/sce/mouse_lung.rds")
+
 ```
 
 ### mouse Cortex from scPSM figshare (https://figshare.com/articles/dataset/scPSM/19306661)  (also in https://singlecell.broadinstitute.org/single_cell/study/SCP425/single-cell-comparison-cortex-data)  SCP425
@@ -128,7 +132,7 @@ sce_save = SingleCellExperiment(list(counts = count_mat), colData = coldata)
 unique(coldata$celltype)
 unique(coldata$batch)
 sce_save
-saveRDS(sce_save,"Benchmark/Data/sce/mouse_pancreas.rds")
+saveRDS(sce_save,file.path(data_dir,"mouse_pancreas.rds"))
 
 ``` 
 
@@ -281,7 +285,7 @@ Human liver
 ```{r}
 (unlink("GSM2230761", recursive = TRUE))
 (unlink("GSM2230762", recursive = TRUE))
-(unlink("MCA_500more_dge", recursive = TRUE))
+# (unlink("MCA_500more_dge", recursive = TRUE))
 ```
 
 

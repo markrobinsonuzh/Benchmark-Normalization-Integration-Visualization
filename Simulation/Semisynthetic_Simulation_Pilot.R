@@ -9,6 +9,7 @@ suppressPackageStartupMessages({
   library(SingleCellExperiment)
   library(Seurat)
   library(pbmcapply)
+  library(parallel)
 })
 
 base_dir <- here::here("Benchmark")
@@ -41,7 +42,7 @@ if(length(batch_filtered) > 0){
 
 # HVG 
 seurat = CreateSeuratObject(data)
-seurat = FindVariableFeatures(seurat,nfeatures = 3000) 
+seurat = FindVariableFeatures(seurat,nfeatures = 1000) 
 # MR: 1000 to make it faster? but crashes
 hvg = VariableFeatures(seurat)
 
@@ -74,7 +75,8 @@ marginal <- fit_marginal(
   family_use = "nb",
   n_cores = 4,
   usebam = FALSE,
-  parallelization = "pbmcmapply",
+  parallelization = "mcmapply",
+  # parallelization = "pbmcmapply",
   trace = TRUE
 )
 
