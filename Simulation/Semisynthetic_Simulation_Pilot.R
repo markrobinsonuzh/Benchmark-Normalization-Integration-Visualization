@@ -4,9 +4,12 @@
 # knitr::spin("Simulation/Semisynthetic_Simulation_Pilot.R")
 
 
-library(scDesign3)
-library(SingleCellExperiment)
-library(Seurat)
+suppressPackageStartupMessages({
+  library(scDesign3)
+  library(SingleCellExperiment)
+  library(Seurat)
+  library(pbmcapply)
+})
 
 base_dir <- here::here("Benchmark")
 
@@ -59,6 +62,8 @@ data <- construct_data(
   ncell = 10^6
 )
 
+mean(data$count_mat>0)
+dim(data$count_mat)
 
 marginal <- fit_marginal(
   data = data,
@@ -69,8 +74,13 @@ marginal <- fit_marginal(
   family_use = "nb",
   n_cores = 4,
   usebam = FALSE,
-  parallelization = "pbmcmapply"
+  parallelization = "pbmcmapply",
+  trace = TRUE
 )
+
+length(marginal)
+class(marginal)
+
 
 copula <- fit_copula(
   sce = sce,
