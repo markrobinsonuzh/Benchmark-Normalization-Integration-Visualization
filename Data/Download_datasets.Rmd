@@ -7,6 +7,12 @@ editor_options:
   chunk_output_type: console
 ---
 
+
+<!--
+build with:
+rmarkdown::render("Data/Download_datasets.Rmd")
+--!>
+
 ```{r setup, warning=FALSE, message=FALSE}
 library(readr)
 library(SingleCellExperiment)
@@ -22,9 +28,10 @@ library(here)
 
 ```{r}
 # dir.create("MCA_500more_dge")
-# dir.create("Benchmark/Data")
-# dir.create("Benchmark/Data/sce/")
-data_dir <- here("Benchmark/Data/sce") # assumes this already exists
+#base_dir <- "."
+#dir.create(file.path(base_dir,"Benchmark/Data"))
+#dir.create(file.path(base_dir,"Benchmark/Data/sce"))
+data_dir <- here("Benchmark/Data/sce")
 ```
 
 ### mouse small intestine from figshare (https://figshare.com/s/865e694ad06d5857db4b)
