@@ -6,9 +6,9 @@ utils_dir <- here::here("utils")
 
 suppressPackageStartupMessages({
   source(file.path(utils_dir,"utils.R"))
-  source("utils/Normalization_utils.R")
-  source("utils/Integration_utils.R")
-  source("utils/Visualization_utils.R")
+  source(file.path(utils_dir,"Normalization_utils.R"))
+  source(file.path(utils_dir,"Integration_utils.R"))
+  source(file.path(utils_dir,"Visualization_utils.R"))
 })
 
 data_dir <- here::here("Benchmark")
