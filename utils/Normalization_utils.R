@@ -1,4 +1,4 @@
-library(reticulate)
+#library(reticulate)
 library(Seurat)
 library(distances)
 library(dplyr)

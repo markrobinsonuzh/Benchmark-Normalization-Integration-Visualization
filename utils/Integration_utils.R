@@ -111,32 +111,32 @@ FastMNN = function(seurat.obj, is.sctransform, n.pcs, features){
   }
 }
 
-scVI = function(seurat.obj, is.sctransform, n.pcs, features){
-  print("Running scVI")
-  seurat.obj = IntegrateLayers(
-    object = seurat.obj,
-    method = scVIIntegration,
-    new.reduction = "integrated",
-    conda_env = "Benchmark",
-    verbose = T,
-    features = features,
-    ndims = n.pcs,
-    layers = "counts",
-    orig.reduction = NULL,
-    scale.layer = NULL,
-    assay = "RNA"
-  ) 
-  return(seurat.obj)
-}
+# scVI = function(seurat.obj, is.sctransform, n.pcs, features){
+#   print("Running scVI")
+#   seurat.obj = IntegrateLayers(
+#     object = seurat.obj,
+#     method = scVIIntegration,
+#     new.reduction = "integrated",
+#     conda_env = "Benchmark",
+#     verbose = T,
+#     features = features,
+#     ndims = n.pcs,
+#     layers = "counts",
+#     orig.reduction = NULL,
+#     scale.layer = NULL,
+#     assay = "RNA"
+#   ) 
+#   return(seurat.obj)
+# }
 
-LIGERv2 = function(seurat.obj, is.sctransform, n.pcs, features){
-  seurat.obj <- seurat.obj %>%
-    normalize() %>%
-    selectGenes(nGenes = nrow(seurat.obj)) %>%
-    scaleNotCenter()
-  seurat.obj <- seurat.obj %>%
-    runINMF(k = n.pcs) %>%
-    quantileNorm()
-  seurat.obj[["integrated"]] = seurat.obj[["inmfNorm"]]
-  return(seurat.obj)
-}
+# LIGERv2 = function(seurat.obj, is.sctransform, n.pcs, features){
+#   seurat.obj <- seurat.obj %>%
+#     normalize() %>%
+#     selectGenes(nGenes = nrow(seurat.obj)) %>%
+#     scaleNotCenter()
+#   seurat.obj <- seurat.obj %>%
+#     runINMF(k = n.pcs) %>%
+#     quantileNorm()
+#   seurat.obj[["integrated"]] = seurat.obj[["inmfNorm"]]
+#   return(seurat.obj)
+# }

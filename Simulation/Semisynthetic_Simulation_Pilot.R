@@ -73,7 +73,7 @@ marginal <- fit_marginal(
   mu_formula = "celltype+batch",
   sigma_formula = "celltype",
   family_use = "nb",
-  n_cores = 4,
+  n_cores = 40,
   usebam = FALSE,
   parallelization = "mcmapply",
   # parallelization = "pbmcmapply",
@@ -90,17 +90,18 @@ copula <- fit_copula(
   marginal_list = marginal,
   family_use = "nb",
   copula = "gaussian",
-  n_cores = 4,
+  n_cores = 40,
   input_data = data$dat
 )
 
 para <- extract_para(
   sce = sce,
   marginal_list = marginal,
-  n_cores = 6,
+  n_cores = 40,
   family_use = "nb",
   new_covariate = data$newCovariate,
   data = data$dat#,
+  parallelization = "mcmapply"
   #parallelization = "pbmcmapply"
 )
 
@@ -132,3 +133,5 @@ saveRDS(list(meta=data$newCovariate,counts=newcounts),
 
 sessionInfo()
 print("Finished")
+
+
