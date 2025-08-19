@@ -3,8 +3,9 @@ library(Seurat)
 library(distances)
 library(dplyr)
 #use_condaenv("Benchmark")
-sc = import("scanpy", convert=F)
-source_python("~/normalization.py")
+# MR: comment out python for now; TODO: build/integrate reticulate env
+# sc = import("scanpy", convert=F)
+# source_python("utils/normalization.py")
 
 Normalization = function(seurat.obj, NormMethod){
   seurat.obj = NormMethod(seurat.obj)
