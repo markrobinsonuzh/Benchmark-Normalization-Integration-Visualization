@@ -5,6 +5,7 @@
 utils_dir <- here::here("utils")
 
 suppressPackageStartupMessages({
+  source(file.path(utils_dir,"utils.R"))
   source("utils/Normalization_utils.R")
   source("utils/Integration_utils.R")
   source("utils/Visualization_utils.R")
