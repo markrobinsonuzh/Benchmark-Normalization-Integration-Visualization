@@ -4,6 +4,8 @@
 
 utils_dir <- here::here("utils")
 
+
+source(file.path(utils_dir,"utils.R"))
 source(file.path(utils_dir,"Normalization_utils.R"))
 source(file.path(utils_dir,"Integration_utils.R"))
 source(file.path(utils_dir,"Visualization_utils.R"))
