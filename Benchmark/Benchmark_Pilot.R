@@ -26,7 +26,7 @@ dataset = "Pilot"
 # MR: reduce the space a bit
 NormalizationMethods = c("log1pCP10k","sctransform")
 IntegrationMethods = c("Seurat-CCA","Harmony")
-VisualizationMethods = c("Seurat-UMAP","densMAP","scanpy-UMAP")
+VisualizationMethods = c("Seurat-UMAP","densMAP")
 
 
 Time = expand.grid(Normalization = NormalizationMethods,
@@ -73,14 +73,14 @@ for(i in 1:nrow(Time)){
     if( NormalizeMethod == "sctransform" ){
       start = Sys.time()
       seurat = Integration(seurat, get(IntegrateMethod), n.pcs = 50, 
-                           features = row.names(seurat), is.sctransform=T)
+                           features = row.names(seurat), is.sctransform=TRUE)
       end = Sys.time()
       print(end-start)
       Time[i,]$Integrate.time= difftime(end,start,unit = "secs")
     }else{
       start = Sys.time()
       seurat = Integration(seurat, get(IntegrateMethod), n.pcs = 50, 
-                           features = row.names(seurat), is.sctransform=F)
+                           features = row.names(seurat), is.sctransform=FALSE)
       end = Sys.time()
       print(end-start)
       Time[i,]$Integrate.time= difftime(end,start,unit = "secs")

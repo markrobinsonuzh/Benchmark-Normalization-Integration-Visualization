@@ -7,9 +7,9 @@ library(harmony)
 library(Rfast)
 library(dplyr)
 
-Integration = function(seurat.obj, IntegrateMethod, n.pcs = 50, features=rownames(seurat.obj), is.sctransform=F){
+Integration = function(seurat.obj, IntegrateMethod, n.pcs = 50, features=rownames(seurat.obj), is.sctransform=FALSE){
   # if(!(identical(IntegrateMethod, scVI) | identical(IntegrateMethod, LIGERv2) | identical(IntegrateMethod, FastMNN))){
-  if(identical(IntegrateMethod, FastMNN)){
+  if(!identical(IntegrateMethod, FastMNN)){
     if(!is.sctransform){
       seurat.obj = FindVariableFeatures(seurat.obj, nfeatures = nrow(seurat.obj))
       seurat.obj <- ScaleData(seurat.obj) 
@@ -24,11 +24,11 @@ Integration = function(seurat.obj, IntegrateMethod, n.pcs = 50, features=rowname
 
 Harmony = function(seurat.obj, is.sctransform, n.pcs, features){
   print("Running Harmony")
-  if(is.sctransform==F){
+  if(!is.sctransform){
     seurat.obj = IntegrateLayers(
       object = seurat.obj, method = HarmonyIntegration,
       orig.reduction = "pca", new.reduction = "integrated",
-      verbose = T,
+      verbose = TRUE,
       npcs = n.pcs,
       features = features
     ) 
@@ -37,7 +37,7 @@ Harmony = function(seurat.obj, is.sctransform, n.pcs, features){
       object = seurat.obj, method = HarmonyIntegration,
       normalization.method = "SCT",
       orig.reduction = "pca", new.reduction = "integrated",
-      verbose = T,
+      verbose = TRUE,
       npcs = n.pcs,
       features = features
     ) 
@@ -48,11 +48,11 @@ Harmony = function(seurat.obj, is.sctransform, n.pcs, features){
 
 `Seurat-RPCA` = function(seurat.obj, is.sctransform, n.pcs, features){
   print("Running Seurat RPCA")
-  if(is.sctransform==F){
+  if(!is.sctransform){
     seurat.obj = IntegrateLayers(
       object = seurat.obj, method = RPCAIntegration,
       orig.reduction = "pca", new.reduction = "integrated",
-      verbose = T,
+      verbose = TRUE,
       dims = 1:n.pcs,
       features = features
     ) 
@@ -61,7 +61,7 @@ Harmony = function(seurat.obj, is.sctransform, n.pcs, features){
       object = seurat.obj, method = RPCAIntegration,
       normalization.method = "SCT",
       orig.reduction = "pca", new.reduction = "integrated",
-      verbose = T,
+      verbose = TRUE,
       dims = 1:n.pcs,
       features = features
     )
@@ -71,7 +71,7 @@ Harmony = function(seurat.obj, is.sctransform, n.pcs, features){
 
 FastMNN = function(seurat.obj, is.sctransform, n.pcs, features){
   print("Running Fast MNN")
-  if(is.sctransform==F){
+  if(!is.sctransform){
     seurat.obj = IntegrateLayers(object = seurat.obj, method = FastMNNIntegration,
                                  new.reduction = 'integrated', verbose = T, orig.reduction = NULL,
                                  features = features,
@@ -80,7 +80,7 @@ FastMNN = function(seurat.obj, is.sctransform, n.pcs, features){
     seurat.obj = IntegrateLayers(
       object = seurat.obj, method = FastMNNIntegration,
       new.reduction = "integrated",orig.reduction = NULL,
-      verbose = T,
+      verbose = TRUE,
       batch = seurat.obj$batch,
       features = features,
       assay = "SCT",
@@ -92,7 +92,7 @@ FastMNN = function(seurat.obj, is.sctransform, n.pcs, features){
 
 `Seurat-CCA` = function(seurat.obj, is.sctransform, n.pcs, features){
   print("Running Seruat CCA")
-  if(is.sctransform==F){
+  if(!is.sctransform){
     seurat.obj = IntegrateLayers(
       object = seurat.obj, method = CCAIntegration,
       orig.reduction = "pca", new.reduction = "integrated",
