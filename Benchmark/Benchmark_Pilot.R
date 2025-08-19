@@ -2,9 +2,11 @@
 # build to HTML with
 # knitr::spin("Benchmark/Benchmark_Pilot.R") 
 
-source("utils/Normalization_utils.R")
-source("utils/Integration_utils.R")
-source("utils/Visualization_utils.R")
+utils_dir <- here::here("utils")
+
+source(file.path(utils_dir,"Normalization_utils.R"))
+source(file.path(utils_dir,"Integration_utils.R"))
+source(file.path(utils_dir,"Visualization_utils.R"))
 
 data_dir <- here::here("Benchmark")
     
