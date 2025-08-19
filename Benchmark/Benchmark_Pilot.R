@@ -3,7 +3,7 @@ source("utils/Integration_utils.R")
 source("utils/Visualization_utils.R")
 
 data_dir <- here::here("Benchmark")
-  
+    
 data = readRDS(file.path(data_dir,"Data/Simulation/Pilot/MousePancreas_simulation.rds"))
 dataset = "Pilot"
 
