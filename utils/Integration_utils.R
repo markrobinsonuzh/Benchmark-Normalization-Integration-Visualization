@@ -8,7 +8,8 @@ library(Rfast)
 library(dplyr)
 
 Integration = function(seurat.obj, IntegrateMethod, n.pcs = 50, features=rownames(seurat.obj), is.sctransform=F){
-  if(!(identical(IntegrateMethod, scVI) | identical(IntegrateMethod, LIGERv2) | identical(IntegrateMethod, FastMNN))){
+  # if(!(identical(IntegrateMethod, scVI) | identical(IntegrateMethod, LIGERv2) | identical(IntegrateMethod, FastMNN))){
+  if(identical(IntegrateMethod, FastMNN)){
     if(!is.sctransform){
       seurat.obj = FindVariableFeatures(seurat.obj, nfeatures = nrow(seurat.obj))
       seurat.obj <- ScaleData(seurat.obj) 
