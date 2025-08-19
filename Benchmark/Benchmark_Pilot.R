@@ -1,3 +1,7 @@
+
+# build to HTML with
+# knitr::spin("Benchmark/Benchmark_Pilot.R") 
+
 source("utils/Normalization_utils.R")
 source("utils/Integration_utils.R")
 source("utils/Visualization_utils.R")
@@ -30,6 +34,7 @@ Time$Integrate.time = 0
 Time$Visual.time = 0
 Time = Time[order(Time$Integration,Time$Normalization),]
 rownames(Time) = 1:nrow(Time)
+Time
 
 counts = data$counts
 meta = data$meta[,c("celltype","batch")]
