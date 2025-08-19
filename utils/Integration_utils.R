@@ -91,7 +91,7 @@ FastMNN = function(seurat.obj, is.sctransform, n.pcs, features){
 }
 
 `Seurat-CCA` = function(seurat.obj, is.sctransform, n.pcs, features){
-  print("Running Seruat CCA")
+  print("Running Seurat CCA")
   if(!is.sctransform){
     seurat.obj = IntegrateLayers(
       object = seurat.obj, method = CCAIntegration,

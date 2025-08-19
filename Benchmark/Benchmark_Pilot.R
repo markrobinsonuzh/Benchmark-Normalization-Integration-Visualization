@@ -9,7 +9,7 @@ suppressPackageStartupMessages({
   source(file.path(utils_dir,"Normalization_utils.R"))
   source(file.path(utils_dir,"Integration_utils.R"))
   source(file.path(utils_dir,"Visualization_utils.R"))
-})
+  })
 
 data_dir <- here::here("Benchmark")
     
@@ -25,7 +25,7 @@ dataset = "Pilot"
 
 # MR: reduce the space a bit
 NormalizationMethods = c("log1pCP10k","sctransform")
-IntegrationMethods = c("Seurat-CCA","Harmony")
+IntegrationMethods = c("FastMNN","Harmony")
 VisualizationMethods = c("Seurat-UMAP","densMAP")
 
 
