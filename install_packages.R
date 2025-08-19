@@ -9,8 +9,9 @@ options(repos="https://stat.ethz.ch/CRAN",
 install.packages("BiocManager")
 
 pkgs <- c("scDesign3","SingleCellExperiment","readr","rmarkdown",
-	  "Seurat","dplyr","GEOquery","R.utils", "here", "markdown",
-          "remotes","distances","harmony","Rfast","densvis")
+          "Seurat","dplyr","GEOquery","R.utils", "here", "markdown",
+          "remotes","distances","harmony","Rfast","densvis",
+          "batchelor")
 
 BiocManager::install(pkgs, Ncpus=10)
 
