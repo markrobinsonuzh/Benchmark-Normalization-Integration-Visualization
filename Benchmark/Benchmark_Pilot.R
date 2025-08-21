@@ -2,6 +2,9 @@
 # build to HTML with
 # knitr::spin("Benchmark/Benchmark_Pilot.R") 
 
+library(reticulate)
+use_virtualenv("r-reticulate")
+
 utils_dir <- here::here("utils")
 
 suppressPackageStartupMessages({

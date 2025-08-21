@@ -18,3 +18,10 @@ BiocManager::install(pkgs, Ncpus=10)
 BiocManager::install("miraisolutions/godmode", Ncpus=10)
 BiocManager::install("satijalab/seurat-wrappers", Ncpus=10)
 
+
+# For Python via R, reticulate pyenv
+library(reticulate)
+install_python("3.10")
+py_install("umap-learn")
+
+
