@@ -50,7 +50,7 @@ meta = data$meta[,c("celltype","batch")]
 # MR: take a subset
 set.seed(1001)
 nc <- ncol(counts)
-s <- sample(nc, round(.05*nc), replace = FALSE)
+s <- sample(nc, round(.20*nc), replace = FALSE)
 counts <- counts[,s]
 meta <- meta[s,]
 
@@ -114,3 +114,5 @@ for(i in 1:nrow(Time)){
                             paste0(dataset,"_",NormalizeMethod,"+",IntegrateMethod,"+",VisualizeMethod,".rds")))
   old_preprocessing = new_preprocessing
 }
+
+Time

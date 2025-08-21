@@ -11,7 +11,7 @@ install.packages("BiocManager")
 pkgs <- c("scDesign3","SingleCellExperiment","readr","rmarkdown",
           "Seurat","dplyr","GEOquery","R.utils", "here", "markdown",
           "remotes","distances","harmony","Rfast","densvis",
-          "batchelor")
+          "batchelor","glmGamPoi")
 
 BiocManager::install(pkgs, Ncpus=10)
 
