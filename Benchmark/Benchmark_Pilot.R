@@ -46,6 +46,16 @@ Time
 
 counts = data$counts
 meta = data$meta[,c("celltype","batch")]
+
+# MR: take a subset
+set.seed(1001)
+nc <- ncol(counts)
+s <- sample(nc, round(.05*nc), replace = FALSE)
+counts <- counts[,s]
+meta <- meta[s,]
+
+with(meta, table(celltype, batch))
+
 rm(data)
 rownames(meta) = colnames(counts)
 seurat.obj = CreateSeuratObject(counts, meta.data=meta)
