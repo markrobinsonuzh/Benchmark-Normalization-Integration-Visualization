@@ -116,3 +116,5 @@ for(i in 1:nrow(Time)){
 }
 
 Time
+
+sessionInfo()
