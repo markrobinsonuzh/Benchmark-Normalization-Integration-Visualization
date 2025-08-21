@@ -110,6 +110,6 @@ for(i in 1:nrow(Time)){
   Time[i,]$Visual.time= difftime(end,start,unit = "secs")
   print(dim(Visual))
   saveRDS(Time, file.path(data_dir, "Results/Pilot/Runtime/Pilot_TimeComplexity.rds"))
-  saveRDS(Visual, paste0(data_dir, "Results/Pilot/Embeddings/",dataset,"_",NormalizeMethod,"+",IntegrateMethod,"+",VisualizeMethod,".rds"))
+  saveRDS(Visual, file.path(data_dir, "Results/Pilot/Embeddings/",dataset,"_",NormalizeMethod,"+",IntegrateMethod,"+",VisualizeMethod,".rds"))
   old_preprocessing = new_preprocessing
 }
